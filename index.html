@@ -1,0 +1,1876 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Honda เครื่องคำนวณดาวน์ + ผ่อน</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #f3f4f6;
+  color: #222;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    "Noto Sans Thai",
+    Arial,
+    sans-serif;
+}
+
+header {
+  background: #e60012;
+  color: white;
+  padding: 18px 15px;
+  text-align: center;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 22px;
+}
+
+header p {
+  margin: 5px 0 0;
+  font-size: 13px;
+}
+
+.container {
+  max-width: 760px;
+  margin: auto;
+  padding: 15px;
+}
+
+.card {
+  background: white;
+  border-radius: 15px;
+  padding: 18px;
+  margin-bottom: 15px;
+  box-shadow: 0 3px 15px rgba(0,0,0,.07);
+}
+
+h2 {
+  font-size: 18px;
+  margin: 0 0 15px;
+}
+
+label {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+select,
+input {
+  width: 100%;
+  height: 48px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 0 12px;
+  font-size: 16px;
+  background: white;
+  outline: none;
+}
+
+select:focus,
+input:focus {
+  border-color: #e60012;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.price-box {
+  background: #f8f8f8;
+  border-radius: 12px;
+  padding: 12px;
+  margin-top: 10px;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 7px 0;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.row:last-child {
+  border-bottom: none;
+}
+
+.row span:first-child {
+  color: #666;
+}
+
+.row span:last-child {
+  font-weight: 800;
+  text-align: right;
+}
+
+.option-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.term-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 7px;
+}
+
+.option-btn,
+.term-btn {
+  min-height: 47px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background: white;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.option-btn.active,
+.term-btn.active {
+  background: #e60012;
+  color: white;
+  border-color: #e60012;
+}
+
+.custom-down {
+  margin-top: 9px;
+}
+
+.status {
+  margin-top: 8px;
+  padding: 9px 11px;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.status.ok {
+  background: #ecfdf3;
+  color: #15803d;
+}
+
+.status.bad {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+button.main-btn {
+  width: 100%;
+  height: 54px;
+  border: none;
+  border-radius: 12px;
+  background: #e60012;
+  color: white;
+  font-size: 18px;
+  font-weight: 800;
+  cursor: pointer;
+  margin-top: 5px;
+}
+
+button.compare-btn {
+  width: 100%;
+  height: 50px;
+  border: 2px solid #e60012;
+  border-radius: 12px;
+  background: white;
+  color: #e60012;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.result-card {
+  border-top: 4px solid #e60012;
+}
+
+.monthly {
+  background: #fff3f3;
+  border: 1px solid #ffd4d4;
+  border-radius: 14px;
+  text-align: center;
+  padding: 17px 10px;
+  margin-top: 14px;
+}
+
+.monthly .title {
+  font-size: 14px;
+  color: #666;
+  font-weight: 700;
+}
+
+.monthly .number {
+  color: #e60012;
+  font-size: 34px;
+  font-weight: 900;
+  line-height: 1.2;
+  margin-top: 3px;
+}
+
+.monthly .unit {
+  font-size: 13px;
+  color: #777;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+}
+
+th,
+td {
+  padding: 11px 8px;
+  border-bottom: 1px solid #ddd;
+}
+
+th {
+  background: #f5f5f5;
+  text-align: left;
+}
+
+td:last-child,
+th:last-child {
+  text-align: right;
+}
+
+tr.current {
+  background: #fff1f1;
+  color: #e60012;
+  font-weight: 800;
+}
+
+.hidden {
+  display: none;
+}
+
+.note {
+  font-size: 12px;
+  color: #777;
+  margin-top: 8px;
+}
+
+@media (min-width: 600px) {
+  .container {
+    max-width: 850px;
+    padding: 24px;
+  }
+
+  header h1 {
+    font-size: 27px;
+  }
+
+  .card {
+    padding: 22px;
+  }
+}
+
+@media (max-width: 380px) {
+  .container {
+    padding: 10px;
+  }
+
+  .card {
+    padding: 14px;
+  }
+
+  .option-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .term-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .monthly .number {
+    font-size: 29px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>Honda คำนวณดาวน์ + ผ่อน</h1>
+  <p>เครื่องมือช่วยคำนวณสำหรับเซลล์</p>
+</header>
+
+<div class="container">
+
+  <!-- เลือกรถ -->
+  <div class="card">
+
+    <h2>1. เลือกรถ</h2>
+
+    <div class="form-group">
+      <label>รุ่นรถ</label>
+      <select id="model">
+        <option value="">-- เลือกรุ่นรถ --</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>รุ่นย่อย</label>
+      <select id="variant" disabled>
+        <option value="">-- เลือกรุ่นย่อย --</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>สี</label>
+      <select id="color" disabled>
+        <option value="">-- เลือกสี --</option>
+      </select>
+    </div>
+
+  </div>
+
+
+  <!-- ราคา -->
+  <div class="card">
+
+    <h2>2. ราคา</h2>
+
+    <div class="price-box">
+
+      <div class="row">
+        <span>ราคาเงินสด</span>
+        <span id="cashPrice">-</span>
+      </div>
+
+      <div class="row">
+        <span>ยอดจัดเต็ม</span>
+        <span id="fullFinance">-</span>
+      </div>
+
+      <div class="row">
+        <span>ช่วยดาวน์</span>
+        <span id="helpDown">-</span>
+      </div>
+
+      <div class="row">
+        <span>โปรจัดใหม่</span>
+        <span id="promoPrice">-</span>
+      </div>
+
+    </div>
+
+    <div class="note">
+      * Giorno+ ใช้ยอดจัดตามฐานข้อมูล เนื่องจากไม่มีราคาเงินสด/โปรจัดใหม่ในข้อมูลนี้
+    </div>
+
+  </div>
+
+
+  <!-- ดาวน์ -->
+  <div class="card">
+
+    <h2>3. กลุ่มดาวน์</h2>
+
+    <div class="option-grid">
+
+      <button class="option-btn" data-down-group="10">
+        ดาวน์ 10%
+      </button>
+
+      <button class="option-btn" data-down-group="20">
+        ดาวน์ 20%
+      </button>
+
+      <button class="option-btn" data-down-group="custom">
+        กรอกเอง
+      </button>
+
+    </div>
+
+    <div class="price-box" style="margin-top:12px">
+
+      <div class="row">
+        <span>ดาวน์ขั้นต่ำ</span>
+        <span id="minimumDown">-</span>
+      </div>
+
+      <div class="row">
+        <span>ยอดจัดตามกลุ่ม</span>
+        <span id="groupFinance">-</span>
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- เงินดาวน์ -->
+  <div class="card">
+
+    <h2>4. เงินดาวน์</h2>
+
+    <div class="option-grid">
+
+      <button class="option-btn down-btn" data-down="5000">
+        5,000
+      </button>
+
+      <button class="option-btn down-btn" data-down="10000">
+        10,000
+      </button>
+
+      <button class="option-btn down-btn" data-down="20000">
+        20,000
+      </button>
+
+      <button class="option-btn down-btn" data-down="30000">
+        30,000
+      </button>
+
+    </div>
+
+    <div class="custom-down">
+      <label>หรือกรอกเงินดาวน์เอง</label>
+
+      <input
+        id="downInput"
+        type="number"
+        inputmode="numeric"
+        placeholder="เช่น 15000"
+      >
+    </div>
+
+    <div id="downStatus" class="status hidden"></div>
+
+  </div>
+
+
+  <!-- ระยะผ่อน -->
+  <div class="card">
+
+    <h2>5. ระยะผ่อน</h2>
+
+    <div class="term-grid">
+
+      <button class="term-btn" data-term="12">12</button>
+      <button class="term-btn" data-term="18">18</button>
+      <button class="term-btn" data-term="24">24</button>
+      <button class="term-btn" data-term="30">30</button>
+      <button class="term-btn" data-term="36">36</button>
+
+    </div>
+
+  </div>
+
+
+  <!-- คำนวณ -->
+  <div class="card">
+
+    <button class="main-btn" id="calculateBtn">
+      คำนวณ
+    </button>
+
+  </div>
+
+
+  <!-- ผลคำนวณ -->
+  <div class="card result-card" id="resultCard">
+
+    <h2 style="text-align:center">
+      ผลการคำนวณ
+    </h2>
+
+    <div class="row">
+      <span>ราคาเงินสด</span>
+      <span id="resultCash">-</span>
+    </div>
+
+    <div class="row">
+      <span>โปรจัดใหม่</span>
+      <span id="resultPromo">-</span>
+    </div>
+
+    <div class="row">
+      <span>เงินดาวน์</span>
+      <span id="resultDown">-</span>
+    </div>
+
+    <div class="row">
+      <span>ยอดจัด</span>
+      <span id="resultFinance">-</span>
+    </div>
+
+    <div class="row">
+      <span>ดอกเบี้ย</span>
+      <span id="resultInterest">-</span>
+    </div>
+
+    <div class="row">
+      <span>ยอดชำระรวม</span>
+      <span id="resultTotal">-</span>
+    </div>
+
+    <div class="monthly">
+
+      <div class="title">
+        ค่างวด <span id="resultTerm">-</span> งวด
+      </div>
+
+      <div class="number">
+        <span id="resultMonthly">-</span>
+      </div>
+
+      <div class="unit">
+        บาท / เดือน
+      </div>
+
+    </div>
+
+    <button class="compare-btn" id="compareBtn">
+      เปรียบเทียบทุกงวด
+    </button>
+
+    <div id="compareBox" class="hidden">
+
+      <h3 style="margin:18px 0 5px;">
+        เปรียบเทียบค่างวด
+      </h3>
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>งวด</th>
+            <th>ค่างวด / เดือน</th>
+          </tr>
+        </thead>
+
+        <tbody id="compareBody"></tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   DATABASE
+   ========================================================= */
+
+const motorcycles = {
+
+  "Wave110": [
+
+    {
+      code: "AFS110KDBT TH",
+      name: "ล้อซี่ลวด / สตาร์ทเท้า / ดรัมเบรก",
+      colors: ["ดำ"],
+      cash: 39500,
+      fullFinance: 50000,
+      helpDown: 5000,
+      promo: 45000,
+      finance10: 44100,
+      down10: 900,
+      finance20: 39200,
+      down20: 5800,
+      rateGroup: "S"
+    },
+
+    {
+      code: "AFS110MSBT TH",
+      name: "ล้อซี่ลวด / สตาร์ทมือ",
+      colors: ["น้ำเงิน-ดำ", "ดำ-น้ำตาล"],
+      cash: 39500,
+      fullFinance: 59200,
+      helpDown: 5000,
+      promo: 54200,
+      finance10: 52300,
+      down10: 1900,
+      finance20: 46500,
+      down20: 7700,
+      rateGroup: "S"
+    },
+
+    {
+      code: "AFS110MSBT 2TH",
+      name: "ล้อซี่ลวด / สีพิเศษ",
+      colors: ["เทา-ดำ"],
+      cash: 39500,
+      fullFinance: 59200,
+      helpDown: 5000,
+      promo: 54200,
+      finance10: 52300,
+      down10: 1900,
+      finance20: 46500,
+      down20: 7700,
+      rateGroup: "S"
+    },
+
+    {
+      code: "AFS110MCBT TH",
+      name: "ล้อแม็ก / สตาร์ทมือ",
+      colors: ["น้ำเงิน", "แดง"],
+      cash: 48000,
+      fullFinance: 61700,
+      helpDown: 5000,
+      promo: 56700,
+      finance10: 54600,
+      down10: 2100,
+      finance20: 48500,
+      down20: 8200,
+      rateGroup: "S"
+    },
+
+    {
+      code: "AFS110MCBT 2TH",
+      name: "ล้อแม็ก / สีพิเศษ",
+      colors: ["เทา-น้ำตาล"],
+      cash: 48000,
+      fullFinance: 61700,
+      helpDown: 5000,
+      promo: 56700,
+      finance10: 54600,
+      down10: 2100,
+      finance20: 48500,
+      down20: 8200,
+      rateGroup: "S"
+    },
+
+    {
+      code: "AFS110MCBT 3TH",
+      name: "ล้อแม็ก / สีพิเศษ",
+      colors: ["ขาว-น้ำตาล", "ดำ-น้ำตาล"],
+      cash: 48000,
+      fullFinance: 62200,
+      helpDown: 5000,
+      promo: 57200,
+      finance10: 55000,
+      down10: 2200,
+      finance20: 48900,
+      down20: 8300,
+      rateGroup: "S"
+    }
+
+  ],
+
+
+  "Wave125i": [
+
+    {
+      code: "AFS125MSBT TH",
+      name: "ล้อซี่ลวด / สตาร์ทมือ",
+      colors: ["แดง-ดำ", "ดำ"],
+      cash: 60000,
+      fullFinance: 69800,
+      helpDown: 5000,
+      promo: 64800,
+      finance10: 61900,
+      down10: 2900,
+      finance20: 55100,
+      down20: 9700,
+      rateGroup: "S"
+    },
+
+    {
+      code: "AFS125CSBT TH",
+      name: "ล้อแม็กดำ / สตาร์ทมือ",
+      colors: ["น้ำตาล-ดำ", "น้ำเงิน-ดำ", "ดำ", "ขาว-ดำ"],
+      cash: 62000,
+      fullFinance: 72500,
+      helpDown: 5000,
+      promo: 67500,
+      finance10: 64300,
+      down10: 3200,
+      finance20: 57200,
+      down20: 10300,
+      rateGroup: "S"
+    },
+
+    {
+      code: "AFS125CSBT 2TH",
+      name: "ล้อแม็กทอง / สีพิเศษ",
+      colors: ["น้ำตาล-ดำ", "น้ำเงิน-ดำ", "ดำ", "ขาว-ดำ"],
+      cash: 65000,
+      fullFinance: 74200,
+      helpDown: 5000,
+      promo: 69200,
+      finance10: 65800,
+      down10: 3400,
+      finance20: 58500,
+      down20: 10700,
+      rateGroup: "S"
+    }
+
+  ],
+
+
+  "Super Cub": [
+
+    {
+      code: "NBC110MSBT TH",
+      name: "สีเขียว / รุ่นมาตรฐาน",
+      colors: ["สีเขียว"],
+      cash: 52000,
+      fullFinance: 59500,
+      helpDown: 2000,
+      promo: 57500,
+      finance10: 51500,
+      down10: 6000,
+      finance20: 46000,
+      down20: 11500,
+      rateGroup: "S"
+    },
+
+    {
+      code: "NBC110MSBT 2TH",
+      name: "รุ่น 2TH / สีแฟชั่น",
+      colors: ["Tokyo 80s Limited Edition / สีพิเศษ"],
+      cash: 52000,
+      fullFinance: 63700,
+      helpDown: 2000,
+      promo: 63700,
+      finance10: 57300,
+      down10: 6400,
+      finance20: 50900,
+      down20: 12800,
+      rateGroup: "S"
+    }
+
+  ],
+
+
+  "Scoopy": [
+
+    {
+      code: "ACF110BTT 2TH",
+      name: "ล้อซี่ลวด / รุ่น 2TH",
+      colors: ["ฟ้า", "ดำ"],
+      cash: 46000,
+      fullFinance: 63500,
+      helpDown: 14000,
+      promo: 49500,
+      finance10: 44500,
+      down10: 5000,
+      finance20: 39600,
+      down20: 9900,
+      rateGroup: "S"
+    },
+
+    {
+      code: "ACF110CBTT 3TH",
+      name: "รุ่น 3TH",
+      colors: ["เขียว", "ดำ", "ขาว"],
+      cash: 47000,
+      fullFinance: 67000,
+      helpDown: 14000,
+      promo: 53000,
+      finance10: 47700,
+      down10: 5300,
+      finance20: 42400,
+      down20: 10600,
+      rateGroup: "S"
+    }
+
+  ],
+
+
+  "Scoopy Club12": [
+
+    {
+      code: "ACF110CBTT TH",
+      name: "รุ่น Club12",
+      colors: ["ขาว-เทา", "ดำ-แดง", "ขาว-ฟ้า"],
+      cash: 50000,
+      fullFinance: 68500,
+      helpDown: 14000,
+      promo: 54500,
+      finance10: 49000,
+      down10: 5500,
+      finance20: 43600,
+      down20: 10900,
+      rateGroup: "S"
+    }
+
+  ],
+
+
+  "Lead125": [
+
+    {
+      code: "NHX125T TH",
+      name: "รุ่น CBS",
+      colors: ["ดำ", "ขาว-ดำ"],
+      cash: 59500,
+      fullFinance: 72500,
+      helpDown: 9000,
+      promo: 63500,
+      finance10: 57100,
+      down10: 6400,
+      finance20: 50800,
+      down20: 12700,
+      rateGroup: "S"
+    },
+
+    {
+      code: "NHX125AT TH",
+      name: "รุ่น ABS",
+      colors: ["ดำ", "เทา"],
+      cash: 64000,
+      fullFinance: 77000,
+      helpDown: 9000,
+      promo: 68000,
+      finance10: 61200,
+      down10: 6800,
+      finance20: 54400,
+      down20: 13600,
+      rateGroup: "S"
+    }
+
+  ],
+
+
+  "Giorno+": [
+
+    {
+      code: "ACF125CBT TH",
+      name: "Standard / CBS",
+      type: "CBS",
+      colors: ["เทา-ดำ", "ฟ้า-ดำ", "เขียว-ดำ"],
+      cash: null,
+      fullFinance: 80200,
+      helpDown: null,
+      promo: null,
+      finance10: 72100,
+      down10: 8100,
+      finance20: 64100,
+      down20: 16100,
+      rateGroup: "S"
+    },
+
+    {
+      code: "ACF125CBT TH (แผ่น)",
+      name: "Standard / CBS / แผ่น",
+      type: "CBS",
+      colors: ["เทา-ดำ", "ฟ้า-ดำ", "เขียว-ดำ"],
+      cash: null,
+      fullFinance: 80500,
+      helpDown: null,
+      promo: null,
+      finance10: 72400,
+      down10: 8100,
+      finance20: 64400,
+      down20: 16100,
+      rateGroup: "S"
+    },
+
+    {
+      code: "ACF125CAT TH",
+      name: "ABS",
+      type: "ABS",
+      colors: ["เทา-น้ำตาล", "เหลือง-น้ำตาล", "ดำ-น้ำตาล", "ขาว-น้ำตาล"],
+      cash: null,
+      fullFinance: 86400,
+      helpDown: null,
+      promo: null,
+      finance10: 77700,
+      down10: 8700,
+      finance20: 69100,
+      down20: 17300,
+      rateGroup: "S"
+    },
+
+    {
+      code: "ACF125CAT TH (แผ่น)",
+      name: "ABS / แผ่น",
+      type: "ABS",
+      colors: ["เทา-น้ำตาล", "เหลือง-น้ำตาล", "ดำ-น้ำตาล", "ขาว-น้ำตาล"],
+      cash: null,
+      fullFinance: 86700,
+      helpDown: null,
+      promo: null,
+      finance10: 78000,
+      down10: 8700,
+      finance20: 69300,
+      down20: 17400,
+      rateGroup: "S"
+    }
+
+  ],
+
+
+  "Click125": [
+
+    {
+      code: "ACB125CBT TH",
+      name: "ล้อแม็ก / CBS",
+      colors: ["ไม่ระบุ"],
+      cash: 59500,
+      fullFinance: null,
+      helpDown: null,
+      promo: null,
+      finance10: null,
+      down10: null,
+      finance20: null,
+      down20: null,
+      rateGroup: "S"
+    }
+
+  ],
+
+
+  "Click160": [
+
+    {
+      code: "ACB160CATV TH",
+      name: "ABS / ล้อแม็ก",
+      colors: ["เหลือง-ดำ", "ขาว-ดำ", "ดำ", "เขียว-ดำ"],
+      cash: 75000,
+      fullFinance: 78500,
+      helpDown: null,
+      promo: 78500,
+      finance10: 70600,
+      down10: 7900,
+      finance20: 62800,
+      down20: 15700,
+      rateGroup: "M"
+    }
+
+  ],
+
+
+  "ADV160": [
+
+    {
+      code: "ADV160AT 3TH",
+      name: "รุ่น 3TH / สีพิเศษ / Adventure / ABS",
+      colors: ["น้ำตาล-ดำ", "เขียว-ดำ", "น้ำเงิน-ดำ"],
+      cash: 103000,
+      fullFinance: 114000,
+      helpDown: 5000,
+      promo: 109000,
+      finance10: 102600,
+      down10: 6400,
+      finance20: 91200,
+      down20: 17800,
+      rateGroup: "M"
+    },
+
+    {
+      code: "ADV160AT 7TH",
+      name: "รุ่น 7TH / สีพิเศษ / Adventure / ABS",
+      colors: ["ต้องยืนยันสีตามรุ่น 7TH"],
+      cash: 103500,
+      fullFinance: 114500,
+      helpDown: 5000,
+      promo: 109500,
+      finance10: 103000,
+      down10: 6500,
+      finance20: 91600,
+      down20: 17900,
+      rateGroup: "M"
+    }
+
+  ],
+
+
+  "PCX160": [
+
+    {
+      code: "WW160AV TH",
+      name: "รุ่นมาตรฐาน",
+      colors: ["เขียว-ดำ", "น้ำเงิน-ดำ", "เทา-ดำ"],
+      cash: 99500,
+      fullFinance: 116300,
+      helpDown: 8000,
+      promo: 108300,
+      finance10: 104300,
+      down10: 4000,
+      finance20: 93000,
+      down20: 15300,
+      rateGroup: "M"
+    },
+
+    {
+      code: "WW160SV TH",
+      name: "รุ่น RS / รุ่นพิเศษ",
+      colors: ["ต้องยืนยันสีตามรุ่น RS ล่าสุด"],
+      cash: 104000,
+      fullFinance: 121000,
+      helpDown: 8000,
+      promo: 113000,
+      finance10: 108000,
+      down10: 5000,
+      finance20: 96800,
+      down20: 16200,
+      rateGroup: "M"
+    }
+
+  ],
+
+
+  "Forza350": [
+
+    {
+      code: "NSS350AS 2TH",
+      name: "รุ่น 2TH / RoadSync / ABS",
+      colors: ["ดำ-แดง", "แดง-ดำ", "เทา-ดำ", "ขาว-ดำ", "ดำ"],
+      cash: 185000,
+      fullFinance: 185000,
+      helpDown: null,
+      promo: null,
+      rateGroup: "L"
+    }
+
+  ],
+
+
+  "CRF300L": [
+
+    {
+      code: "CRF300LDAS TH",
+      name: "รุ่นมาตรฐาน / Dual Purpose",
+      colors: ["ต้องยืนยันสี MY ล่าสุด"],
+      cash: 157000,
+      fullFinance: 157000,
+      helpDown: null,
+      promo: null,
+      rateGroup: "L"
+    },
+
+    {
+      code: "CRF300LDAS 2TH",
+      name: "รุ่น 2TH / สีพิเศษ / Dual Purpose",
+      colors: ["สีพิเศษ ต้องยืนยันตาม MY ล่าสุด"],
+      cash: 157000,
+      fullFinance: 157000,
+      helpDown: null,
+      promo: null,
+      rateGroup: "L"
+    }
+
+  ],
+
+
+  "ADV350": [
+
+    {
+      code: "ADV350AS 3TH",
+      name: "รุ่น 3TH / Adventure / ABS",
+      colors: ["น้ำเงิน-ดำ", "ดำ", "แดง-ดำ"],
+      cash: 192000,
+      fullFinance: 192000,
+      helpDown: null,
+      promo: null,
+      rateGroup: "L"
+    }
+
+  ],
+
+
+  "UC3": [
+
+    {
+      code: "RST9004T 4TH ขาว",
+      name: "รถจักรยานยนต์ไฟฟ้า / สีขาว",
+      colors: ["Pearl Sapphire White"],
+      cash: 99500,
+      fullFinance: 132600,
+      helpDown: 30000,
+      promo: 102600,
+      rateGroup: "S"
+    },
+
+    {
+      code: "RST9004T 5TH ดำ",
+      name: "รถจักรยานยนต์ไฟฟ้า / สีดำ",
+      colors: ["Graphite Black"],
+      cash: 99500,
+      fullFinance: 132600,
+      helpDown: 30000,
+      promo: 102600,
+      rateGroup: "S"
+    }
+
+  ]
+
+};
+
+
+/* =========================================================
+   ELEMENTS
+   ========================================================= */
+
+const modelEl = document.getElementById("model");
+const variantEl = document.getElementById("variant");
+const colorEl = document.getElementById("color");
+
+const cashPriceEl = document.getElementById("cashPrice");
+const fullFinanceEl = document.getElementById("fullFinance");
+const helpDownEl = document.getElementById("helpDown");
+const promoPriceEl = document.getElementById("promoPrice");
+
+const minimumDownEl = document.getElementById("minimumDown");
+const groupFinanceEl = document.getElementById("groupFinance");
+
+const downInput = document.getElementById("downInput");
+const downStatus = document.getElementById("downStatus");
+
+const resultCash = document.getElementById("resultCash");
+const resultPromo = document.getElementById("resultPromo");
+const resultDown = document.getElementById("resultDown");
+const resultFinance = document.getElementById("resultFinance");
+const resultInterest = document.getElementById("resultInterest");
+const resultTotal = document.getElementById("resultTotal");
+const resultTerm = document.getElementById("resultTerm");
+const resultMonthly = document.getElementById("resultMonthly");
+
+const compareBox = document.getElementById("compareBox");
+const compareBody = document.getElementById("compareBody");
+
+
+/* =========================================================
+   VARIABLES
+   ========================================================= */
+
+let selectedCar = null;
+let selectedDownGroup = null;
+let selectedTerm = 36;
+
+
+/* =========================================================
+   FORMAT MONEY
+   ========================================================= */
+
+function money(value) {
+
+  if (value === null || value === undefined || value === "") {
+    return "-";
+  }
+
+  return Number(value).toLocaleString("th-TH") + " บาท";
+}
+
+
+/* =========================================================
+   LOAD MODELS
+   ========================================================= */
+
+Object.keys(motorcycles).forEach(model => {
+
+  const option = document.createElement("option");
+
+  option.value = model;
+  option.textContent = model;
+
+  modelEl.appendChild(option);
+
+});
+
+
+/* =========================================================
+   MODEL CHANGE
+   ========================================================= */
+
+modelEl.addEventListener("change", function() {
+
+  variantEl.innerHTML =
+    '<option value="">-- เลือกรุ่นย่อย --</option>';
+
+  colorEl.innerHTML =
+    '<option value="">-- เลือกสี --</option>';
+
+  variantEl.disabled = true;
+  colorEl.disabled = true;
+
+  clearPrice();
+
+  selectedCar = null;
+
+  const model = this.value;
+
+  if (!model) return;
+
+  motorcycles[model].forEach((car, index) => {
+
+    const option = document.createElement("option");
+
+    option.value = index;
+    option.textContent =
+      car.code + " — " + car.name;
+
+    variantEl.appendChild(option);
+
+  });
+
+  variantEl.disabled = false;
+
+});
+
+
+/* =========================================================
+   VARIANT CHANGE
+   ========================================================= */
+
+variantEl.addEventListener("change", function() {
+
+  colorEl.innerHTML =
+    '<option value="">-- เลือกสี --</option>';
+
+  const model = modelEl.value;
+
+  if (!model || this.value === "") {
+    colorEl.disabled = true;
+    selectedCar = null;
+    clearPrice();
+    return;
+  }
+
+  selectedCar =
+    motorcycles[model][Number(this.value)];
+
+  selectedCar.colors.forEach(color => {
+
+    const option = document.createElement("option");
+
+    option.value = color;
+    option.textContent = color;
+
+    colorEl.appendChild(option);
+
+  });
+
+  colorEl.disabled = false;
+
+  showPrice();
+
+});
+
+
+/* =========================================================
+   COLOR CHANGE
+   ========================================================= */
+
+colorEl.addEventListener("change", function() {
+
+  showPrice();
+
+});
+
+
+/* =========================================================
+   SHOW PRICE
+   ========================================================= */
+
+function showPrice() {
+
+  if (!selectedCar) {
+    clearPrice();
+    return;
+  }
+
+  cashPriceEl.textContent =
+    money(selectedCar.cash);
+
+  fullFinanceEl.textContent =
+    money(selectedCar.fullFinance);
+
+  helpDownEl.textContent =
+    money(selectedCar.helpDown);
+
+  promoPriceEl.textContent =
+    money(selectedCar.promo);
+
+}
+
+
+/* =========================================================
+   CLEAR PRICE
+   ========================================================= */
+
+function clearPrice() {
+
+  cashPriceEl.textContent = "-";
+  fullFinanceEl.textContent = "-";
+  helpDownEl.textContent = "-";
+  promoPriceEl.textContent = "-";
+
+  minimumDownEl.textContent = "-";
+  groupFinanceEl.textContent = "-";
+
+}
+
+
+/* =========================================================
+   DOWN GROUP
+   ========================================================= */
+
+document.querySelectorAll("[data-down-group]").forEach(button => {
+
+  button.addEventListener("click", function() {
+
+    document
+      .querySelectorAll("[data-down-group]")
+      .forEach(btn => btn.classList.remove("active"));
+
+    this.classList.add("active");
+
+    selectedDownGroup =
+      this.dataset.downGroup;
+
+    updateDownGroup();
+
+  });
+
+});
+
+
+/* =========================================================
+   UPDATE DOWN GROUP
+   ========================================================= */
+
+function updateDownGroup() {
+
+  if (!selectedCar) return;
+
+  if (selectedDownGroup === "10") {
+
+    minimumDownEl.textContent =
+      money(selectedCar.down10);
+
+    groupFinanceEl.textContent =
+      money(selectedCar.finance10);
+
+  }
+
+  else if (selectedDownGroup === "20") {
+
+    minimumDownEl.textContent =
+      money(selectedCar.down20);
+
+    groupFinanceEl.textContent =
+      money(selectedCar.finance20);
+
+  }
+
+  else {
+
+    minimumDownEl.textContent =
+      "กรอกเงินดาวน์เอง";
+
+    groupFinanceEl.textContent =
+      "คำนวณจากเงินดาวน์";
+
+  }
+
+  checkDown();
+
+}
+
+
+/* =========================================================
+   QUICK DOWN BUTTON
+   ========================================================= */
+
+document.querySelectorAll("[data-down]").forEach(button => {
+
+  button.addEventListener("click", function() {
+
+    document
+      .querySelectorAll("[data-down]")
+      .forEach(btn => btn.classList.remove("active"));
+
+    this.classList.add("active");
+
+    downInput.value =
+      this.dataset.down;
+
+    checkDown();
+
+  });
+
+});
+
+
+/* =========================================================
+   CUSTOM DOWN
+   ========================================================= */
+
+downInput.addEventListener("input", function() {
+
+  document
+    .querySelectorAll("[data-down]")
+    .forEach(btn => btn.classList.remove("active"));
+
+  checkDown();
+
+});
+
+
+/* =========================================================
+   CHECK MINIMUM DOWN
+   ========================================================= */
+
+function checkDown() {
+
+  if (!selectedCar) return;
+
+  const down =
+    Number(downInput.value || 0);
+
+  let minimum = 0;
+
+  if (selectedDownGroup === "10") {
+
+    minimum =
+      Number(selectedCar.down10 || 0);
+
+  }
+
+  else if (selectedDownGroup === "20") {
+
+    minimum =
+      Number(selectedCar.down20 || 0);
+
+  }
+
+  if (!minimum) {
+
+    downStatus.className =
+      "status hidden";
+
+    return;
+
+  }
+
+  downStatus.classList.remove("hidden");
+
+  if (down >= minimum) {
+
+    downStatus.className =
+      "status ok";
+
+    downStatus.textContent =
+      "เงินดาวน์ถึงขั้นต่ำ ✓";
+
+  } else {
+
+    downStatus.className =
+      "status bad";
+
+    downStatus.textContent =
+      "เงินดาวน์ต่ำกว่าขั้นต่ำ " +
+      money(minimum);
+
+  }
+
+}
+
+
+/* =========================================================
+   TERM
+   ========================================================= */
+
+document.querySelectorAll("[data-term]").forEach(button => {
+
+  button.addEventListener("click", function() {
+
+    document
+      .querySelectorAll("[data-term]")
+      .forEach(btn => btn.classList.remove("active"));
+
+    this.classList.add("active");
+
+    selectedTerm =
+      Number(this.dataset.term);
+
+  });
+
+});
+
+
+/* ตั้งต้น 36 งวด */
+
+document
+  .querySelector('[data-term="36"]')
+  .classList.add("active");
+
+
+/* =========================================================
+   RATE
+   ========================================================= */
+
+function getRate(group, term) {
+
+  if (group === "S") {
+
+    if (term === 36) return 0.0109;
+
+    if (term === 30) return 0.0107;
+
+    return 0.0106;
+
+  }
+
+  if (group === "M") {
+
+    return 0.0099;
+
+  }
+
+  if (group === "L") {
+
+    return 0.05;
+
+  }
+
+  return 0;
+
+}
+
+
+/* =========================================================
+   FINANCE BASE
+   ========================================================= */
+
+function getFinanceBase(car, down) {
+
+  /*
+    ถ้ามีโปรจัดใหม่
+    ใช้โปรจัดใหม่ - ดาวน์
+
+    ถ้าไม่มีโปร
+    ใช้ยอดจัดเต็ม - ดาวน์
+  */
+
+  let base =
+    car.promo !== null &&
+    car.promo !== undefined
+      ? car.promo
+      : car.fullFinance;
+
+  if (base === null || base === undefined) {
+    return null;
+  }
+
+  return Math.max(0, base - down);
+
+}
+
+
+/* =========================================================
+   CALCULATE
+   ========================================================= */
+
+document
+  .getElementById("calculateBtn")
+  .addEventListener("click", calculate);
+
+
+function calculate() {
+
+  if (!selectedCar) {
+
+    alert("กรุณาเลือกรถก่อน");
+
+    return;
+
+  }
+
+  const down =
+    Number(downInput.value || 0);
+
+  if (down <= 0) {
+
+    alert("กรุณาใส่เงินดาวน์");
+
+    return;
+
+  }
+
+  /* ตรวจขั้นต่ำ */
+
+  let minimum = 0;
+
+  if (selectedDownGroup === "10") {
+
+    minimum =
+      Number(selectedCar.down10 || 0);
+
+  }
+
+  if (selectedDownGroup === "20") {
+
+    minimum =
+      Number(selectedCar.down20 || 0);
+
+  }
+
+  if (minimum > 0 && down < minimum) {
+
+    alert(
+      "เงินดาวน์ต่ำกว่าขั้นต่ำ " +
+      money(minimum)
+    );
+
+    return;
+
+  }
+
+  const finance =
+    getFinanceBase(
+      selectedCar,
+      down
+    );
+
+  if (finance === null) {
+
+    alert(
+      "รุ่นนี้ยังไม่มีข้อมูลสำหรับคำนวณ"
+    );
+
+    return;
+
+  }
+
+  const term =
+    selectedTerm;
+
+  const rate =
+    getRate(
+      selectedCar.rateGroup,
+      term
+    );
+
+  let interest = 0;
+
+  /* S / M */
+
+  if (
+    selectedCar.rateGroup === "S" ||
+    selectedCar.rateGroup === "M"
+  ) {
+
+    interest =
+      finance *
+      rate *
+      term;
+
+  }
+
+  /* L */
+
+  else if (
+    selectedCar.rateGroup === "L"
+  ) {
+
+    interest =
+      finance *
+      0.05 *
+      (term / 12);
+
+  }
+
+  const total =
+    finance + interest;
+
+  const monthly =
+    total / term;
+
+
+  /* แสดงผล */
+
+  resultCash.textContent =
+    money(selectedCar.cash);
+
+  resultPromo.textContent =
+    money(selectedCar.promo);
+
+  resultDown.textContent =
+    money(down);
+
+  resultFinance.textContent =
+    money(finance);
+
+  resultInterest.textContent =
+    money(Math.round(interest));
+
+  resultTotal.textContent =
+    money(Math.round(total));
+
+  resultTerm.textContent =
+    term;
+
+  resultMonthly.textContent =
+    Math.round(monthly).toLocaleString("th-TH");
+
+
+  /* ซ่อน/เปิดตารางใหม่ */
+
+  compareBox.classList.add("hidden");
+
+  compareBody.innerHTML = "";
+
+}
+
+
+/* =========================================================
+   COMPARE ALL TERMS
+   ========================================================= */
+
+document
+  .getElementById("compareBtn")
+  .addEventListener("click", compareAll);
+
+
+function compareAll() {
+
+  if (!selectedCar) {
+
+    alert("กรุณาเลือกรถก่อน");
+
+    return;
+
+  }
+
+  const down =
+    Number(downInput.value || 0);
+
+  if (down <= 0) {
+
+    alert("กรุณาใส่เงินดาวน์");
+
+    return;
+
+  }
+
+  let minimum = 0;
+
+  if (selectedDownGroup === "10") {
+
+    minimum =
+      Number(selectedCar.down10 || 0);
+
+  }
+
+  else if (selectedDownGroup === "20") {
+
+    minimum =
+      Number(selectedCar.down20 || 0);
+
+  }
+
+  if (minimum > 0 && down < minimum) {
+
+    alert(
+      "เงินดาวน์ต่ำกว่าขั้นต่ำ " +
+      money(minimum)
+    );
+
+    return;
+
+  }
+
+  const finance =
+    getFinanceBase(
+      selectedCar,
+      down
+    );
+
+  if (finance === null) {
+
+    alert(
+      "รุ่นนี้ยังไม่มีข้อมูลสำหรับคำนวณ"
+    );
+
+    return;
+
+  }
+
+  const terms =
+    [12, 18, 24, 30, 36];
+
+  compareBody.innerHTML = "";
+
+  terms.forEach(term => {
+
+    /* L จำกัด 36 งวด */
+
+    const rate =
+      getRate(
+        selectedCar.rateGroup,
+        term
+      );
+
+    let interest = 0;
+
+    if (
+      selectedCar.rateGroup === "S" ||
+      selectedCar.rateGroup === "M"
+    ) {
+
+      interest =
+        finance *
+        rate *
+        term;
+
+    }
+
+    else if (
+      selectedCar.rateGroup === "L"
+    ) {
+
+      interest =
+        finance *
+        0.05 *
+        (term / 12);
+
+    }
+
+    const total =
+      finance + interest;
+
+    const monthly =
+      Math.round(total / term);
+
+    const tr =
+      document.createElement("tr");
+
+    if (term === selectedTerm) {
+
+      tr.classList.add("current");
+
+    }
+
+    tr.innerHTML = `
+      <td>${term} งวด</td>
+      <td>${monthly.toLocaleString("th-TH")} บาท</td>
+    `;
+
+    compareBody.appendChild(tr);
+
+  });
+
+  compareBox.classList.remove("hidden");
+
+}
+
+</script>
+
+</body>
+</html>
