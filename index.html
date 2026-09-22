@@ -1235,14 +1235,14 @@ variantEl.addEventListener("change", function() {
 
   selectedCar.colors.forEach(color => {
 
-    const modelEl = document.getElementById("model");
+  const option = document.createElement("option");
 
-    option.value = color;
-    option.textContent = color;
+  option.value = color;
+  option.textContent = color;
 
-    colorEl.appendChild(option);
+  colorEl.appendChild(option);
 
-  });
+});
 
   colorEl.disabled = false;
 
@@ -1392,30 +1392,6 @@ function updateDownGroup() {
   checkDown();
 
 }
-
-
-/* =========================================================
-   QUICK DOWN BUTTON
-   ========================================================= */
-
-document.querySelectorAll("[data-down]").forEach(button => {
-
-  button.addEventListener("click", function() {
-
-    document
-      .querySelectorAll("[data-down]")
-      .forEach(btn => btn.classList.remove("active"));
-
-    this.classList.add("active");
-
-    downInput.value =
-      this.dataset.down;
-
-    checkDown();
-
-  });
-
-});
 
 
 /* =========================================================
@@ -1612,8 +1588,6 @@ function calculate() {
 
   return;
 
-}
-
   }
 
   /* ตรวจขั้นต่ำ */
@@ -1764,11 +1738,11 @@ function compareAll() {
   const down =
     Number(downInput.value || 0);
 
-  if (down <= 0) {
+  if (down < 0) {
 
-    alert("กรุณาใส่เงินดาวน์");
+  alert("เงินดาวน์ไม่ถูกต้อง");
 
-    return;
+  return;
 
   }
 
