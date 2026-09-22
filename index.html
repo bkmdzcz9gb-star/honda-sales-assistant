@@ -382,30 +382,21 @@ tr.current {
 
     <h2>3. กลุ่มดาวน์</h2>
 
-   <div class="down-group-grid">
+    <div class="option-grid">
 
-  <button
-    type="button"
-    class="down-group-btn"
-    data-down-group="10">
-    ดาวน์ 10%
-  </button>
+      <button class="option-btn" data-down-group="10">
+        ดาวน์ 10%
+      </button>
 
-  <button
-    type="button"
-    class="down-group-btn"
-    data-down-group="20">
-    ดาวน์ 20%
-  </button>
+      <button class="option-btn" data-down-group="20">
+        ดาวน์ 20%
+      </button>
 
-  <button
-    type="button"
-    class="down-group-btn"
-    data-down-group="custom">
-    กำหนดเอง
-  </button>
+      <button class="option-btn" data-down-group="custom">
+        กรอกเอง
+      </button>
 
- </div>
+    </div>
 
     <div class="price-box" style="margin-top:12px">
 
@@ -430,10 +421,6 @@ tr.current {
     <h2>4. เงินดาวน์</h2>
 
     <div class="option-grid">
-
-      <button class="option-btn down-btn" data-down="0">
-        ฟรีดาวน์
-      </button>
 
       <button class="option-btn down-btn" data-down="5000">
         5,000
@@ -1244,14 +1231,14 @@ variantEl.addEventListener("change", function() {
 
   selectedCar.colors.forEach(color => {
 
-  const option = document.createElement("option");
+    const option = document.createElement("option");
 
-  option.value = color;
-  option.textContent = color;
+    option.value = color;
+    option.textContent = color;
 
-  colorEl.appendChild(option);
+    colorEl.appendChild(option);
 
-});
+  });
 
   colorEl.disabled = false;
 
@@ -1315,120 +1302,29 @@ function clearPrice() {
 
 
 /* =========================================================
-   DOWN GROUP — 10% / 20% / CUSTOM
-========================================================= */
+   DOWN GROUP
+   ========================================================= */
 
-document
-  .querySelectorAll(".down-group-btn")
-  .forEach(button => {
+document.querySelectorAll("[data-down-group]").forEach(button => {
 
-    button.addEventListener("click", function() {
+  button.addEventListener("click", function() {
 
-      if (!selectedCar) {
-        alert("กรุณาเลือกรุ่นรถก่อน");
-        return;
-      }
+    document
+      .querySelectorAll("[data-down-group]")
+      .forEach(btn => btn.classList.remove("active"));
 
-      /* ล้างสถานะปุ่ม */
-      document
-        .querySelectorAll(".down-group-btn")
-        .forEach(btn => {
-          btn.classList.remove("active");
-        });
+    this.classList.add("active");
 
-      document
-        .querySelectorAll(".down-btn")
-        .forEach(btn => {
-          btn.classList.remove("active");
-        });
+    selectedDownGroup =
+      this.dataset.downGroup;
 
-      /* ปุ่มที่กด */
-      this.classList.add("active");
-
-      selectedDownGroup =
-        this.dataset.downGroup;
-
-      /* ราคาฐาน */
-      const basePrice =
-        selectedCar.promo || selectedCar.cash;
-
-      if (!basePrice) {
-        alert("รุ่นนี้ยังไม่มีราคาสำหรับคำนวณ");
-        return;
-      }
-
-      let minimum = 0;
-
-      /* =========================
-         ดาวน์ 10%
-      ========================= */
-
-      if (selectedDownGroup === "10") {
-
-        minimum =
-          Math.ceil(basePrice * 0.10);
-
-        downInput.value = minimum;
-
-        minimumDownEl.textContent =
-          money(minimum);
-
-        downStatus.textContent =
-          "ตั้งเงินดาวน์ 10% แล้ว";
-
-        downStatus.className =
-          "status success";
-
-      }
-
-
-      /* =========================
-         ดาวน์ 20%
-      ========================= */
-
-      else if (selectedDownGroup === "20") {
-
-        minimum =
-          Math.ceil(basePrice * 0.20);
-
-        downInput.value = minimum;
-
-        minimumDownEl.textContent =
-          money(minimum);
-
-        downStatus.textContent =
-          "ตั้งเงินดาวน์ 20% แล้ว";
-
-        downStatus.className =
-          "status success";
-
-      }
-
-
-      /* =========================
-         กำหนดเอง
-      ========================= */
-
-      else {
-
-        downInput.value = "";
-
-        minimumDownEl.textContent =
-          money(0);
-
-        downStatus.textContent =
-          "สามารถกรอกเงินดาวน์เองได้";
-
-        downStatus.className =
-          "status";
-
-      }
-
-    });
+    updateDownGroup();
 
   });
-  
-  
+
+});
+
+
 /* =========================================================
    UPDATE DOWN GROUP
    ========================================================= */
@@ -1470,6 +1366,30 @@ function updateDownGroup() {
   checkDown();
 
 }
+
+
+/* =========================================================
+   QUICK DOWN BUTTON
+   ========================================================= */
+
+document.querySelectorAll("[data-down]").forEach(button => {
+
+  button.addEventListener("click", function() {
+
+    document
+      .querySelectorAll("[data-down]")
+      .forEach(btn => btn.classList.remove("active"));
+
+    this.classList.add("active");
+
+    downInput.value =
+      this.dataset.down;
+
+    checkDown();
+
+  });
+
+});
 
 
 /* =========================================================
@@ -1660,11 +1580,11 @@ function calculate() {
   const down =
     Number(downInput.value || 0);
 
-  if (down < 0) {
+  if (down <= 0) {
 
-  alert("เงินดาวน์ไม่ถูกต้อง");
+    alert("กรุณาใส่เงินดาวน์");
 
-  return;
+    return;
 
   }
 
@@ -1816,11 +1736,11 @@ function compareAll() {
   const down =
     Number(downInput.value || 0);
 
-  if (down < 0) {
+  if (down <= 0) {
 
-  alert("เงินดาวน์ไม่ถูกต้อง");
+    alert("กรุณาใส่เงินดาวน์");
 
-  return;
+    return;
 
   }
 
