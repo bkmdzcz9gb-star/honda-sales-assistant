@@ -422,6 +422,10 @@ tr.current {
 
     <div class="option-grid">
 
+      <button class="option-btn down-btn" data-down="0">
+        ฟรีดาวน์
+      </button>
+
       <button class="option-btn down-btn" data-down="5000">
         5,000
       </button>
@@ -1305,26 +1309,48 @@ function clearPrice() {
    DOWN GROUP
    ========================================================= */
 
-document.querySelectorAll("[data-down-group]").forEach(button => {
+document.querySelectorAll("[data-down]").forEach(button => {
 
   button.addEventListener("click", function() {
 
     document
-      .querySelectorAll("[data-down-group]")
+      .querySelectorAll("[data-down]")
       .forEach(btn => btn.classList.remove("active"));
 
     this.classList.add("active");
 
-    selectedDownGroup =
-      this.dataset.downGroup;
+    downInput.value =
+      this.dataset.down;
 
-    updateDownGroup();
+    // ฟรีดาวน์ = ดาวน์ 0 บาท
+    // เปลี่ยนกลุ่มเป็น "กรอกเอง" อัตโนมัติ
+    if (this.dataset.down === "0") {
+
+      document
+        .querySelectorAll("[data-down-group]")
+        .forEach(btn => btn.classList.remove("active"));
+
+      document
+        .querySelector('[data-down-group="custom"]')
+        .classList.add("active");
+
+      selectedDownGroup = "custom";
+
+      minimumDownEl.textContent =
+        "0 บาท";
+
+      groupFinanceEl.textContent =
+        "คำนวณจากเงินดาวน์";
+
+    }
+
+    checkDown();
 
   });
 
 });
-
-
+  
+  
 /* =========================================================
    UPDATE DOWN GROUP
    ========================================================= */
@@ -1580,11 +1606,13 @@ function calculate() {
   const down =
     Number(downInput.value || 0);
 
-  if (down <= 0) {
+  if (down < 0) {
 
-    alert("กรุณาใส่เงินดาวน์");
+  alert("เงินดาวน์ไม่ถูกต้อง");
 
-    return;
+  return;
+
+}
 
   }
 
