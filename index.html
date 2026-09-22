@@ -382,21 +382,30 @@ tr.current {
 
     <h2>3. กลุ่มดาวน์</h2>
 
-    <div class="option-grid">
+   <div class="down-group-grid">
 
-      <button class="option-btn" data-down-group="10">
-        ดาวน์ 10%
-      </button>
+  <button
+    type="button"
+    class="down-group-btn"
+    data-down-group="10">
+    ดาวน์ 10%
+  </button>
 
-      <button class="option-btn" data-down-group="20">
-        ดาวน์ 20%
-      </button>
+  <button
+    type="button"
+    class="down-group-btn"
+    data-down-group="20">
+    ดาวน์ 20%
+  </button>
 
-      <button class="option-btn" data-down-group="custom">
-        กรอกเอง
-      </button>
+  <button
+    type="button"
+    class="down-group-btn"
+    data-down-group="custom">
+    กำหนดเอง
+  </button>
 
-    </div>
+ </div>
 
     <div class="price-box" style="margin-top:12px">
 
@@ -1306,49 +1315,118 @@ function clearPrice() {
 
 
 /* =========================================================
-   DOWN GROUP
-   ========================================================= */
+   DOWN GROUP — 10% / 20% / CUSTOM
+========================================================= */
 
-document.querySelectorAll("[data-down]").forEach(button => {
+document
+  .querySelectorAll(".down-group-btn")
+  .forEach(button => {
 
-  button.addEventListener("click", function() {
+    button.addEventListener("click", function() {
 
-    document
-      .querySelectorAll("[data-down]")
-      .forEach(btn => btn.classList.remove("active"));
+      if (!selectedCar) {
+        alert("กรุณาเลือกรุ่นรถก่อน");
+        return;
+      }
 
-    this.classList.add("active");
-
-    downInput.value =
-      this.dataset.down;
-
-    // ฟรีดาวน์ = ดาวน์ 0 บาท
-    // เปลี่ยนกลุ่มเป็น "กรอกเอง" อัตโนมัติ
-    if (this.dataset.down === "0") {
+      /* ล้างสถานะปุ่ม */
+      document
+        .querySelectorAll(".down-group-btn")
+        .forEach(btn => {
+          btn.classList.remove("active");
+        });
 
       document
-        .querySelectorAll("[data-down-group]")
-        .forEach(btn => btn.classList.remove("active"));
+        .querySelectorAll(".down-btn")
+        .forEach(btn => {
+          btn.classList.remove("active");
+        });
 
-      document
-        .querySelector('[data-down-group="custom"]')
-        .classList.add("active");
+      /* ปุ่มที่กด */
+      this.classList.add("active");
 
-      selectedDownGroup = "custom";
+      selectedDownGroup =
+        this.dataset.downGroup;
 
-      minimumDownEl.textContent =
-        "0 บาท";
+      /* ราคาฐาน */
+      const basePrice =
+        selectedCar.promo || selectedCar.cash;
 
-      groupFinanceEl.textContent =
-        "คำนวณจากเงินดาวน์";
+      if (!basePrice) {
+        alert("รุ่นนี้ยังไม่มีราคาสำหรับคำนวณ");
+        return;
+      }
 
-    }
+      let minimum = 0;
 
-    checkDown();
+      /* =========================
+         ดาวน์ 10%
+      ========================= */
+
+      if (selectedDownGroup === "10") {
+
+        minimum =
+          Math.ceil(basePrice * 0.10);
+
+        downInput.value = minimum;
+
+        minimumDownEl.textContent =
+          money(minimum);
+
+        downStatus.textContent =
+          "ตั้งเงินดาวน์ 10% แล้ว";
+
+        downStatus.className =
+          "status success";
+
+      }
+
+
+      /* =========================
+         ดาวน์ 20%
+      ========================= */
+
+      else if (selectedDownGroup === "20") {
+
+        minimum =
+          Math.ceil(basePrice * 0.20);
+
+        downInput.value = minimum;
+
+        minimumDownEl.textContent =
+          money(minimum);
+
+        downStatus.textContent =
+          "ตั้งเงินดาวน์ 20% แล้ว";
+
+        downStatus.className =
+          "status success";
+
+      }
+
+
+      /* =========================
+         กำหนดเอง
+      ========================= */
+
+      else {
+
+        downInput.value = "";
+
+        minimumDownEl.textContent =
+          money(0);
+
+        downStatus.textContent =
+          "สามารถกรอกเงินดาวน์เองได้";
+
+        downStatus.className =
+          "status";
+
+      }
+
+    });
 
   });
-
-});
   
   
 /* =========================================================
