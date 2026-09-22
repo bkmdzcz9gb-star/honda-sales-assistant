@@ -1235,7 +1235,7 @@ variantEl.addEventListener("change", function() {
 
   selectedCar.colors.forEach(color => {
 
-    const option = document.createElement("option");
+    const modelEl = document.getElementById("model");
 
     option.value = color;
     option.textContent = color;
