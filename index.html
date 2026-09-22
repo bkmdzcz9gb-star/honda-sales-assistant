@@ -1675,7 +1675,7 @@ function calculate() {
     finance + interest;
 
   const monthly =
-    total / term;
+  Math.ceil(total / term);
 
 
   /* แสดงผล */
@@ -1702,7 +1702,7 @@ function calculate() {
     term;
 
   resultMonthly.textContent =
-    Math.round(monthly).toLocaleString("th-TH");
+  monthly.toLocaleString("th-TH");
 
 
   /* ซ่อน/เปิดตารางใหม่ */
@@ -1831,7 +1831,7 @@ function compareAll() {
       finance + interest;
 
     const monthly =
-      Math.round(total / term);
+      Math.ceil(total / term);
 
     const tr =
       document.createElement("tr");
